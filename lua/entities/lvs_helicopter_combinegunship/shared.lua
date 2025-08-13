@@ -174,7 +174,7 @@ function ENT:InitWeapons()
 
 		local ShouldPlay = ent.ShouldPlaySND and active
 
-		if ent._oldShouldPlaySND ~= ShouldPlay then
+		if ent._oldShouldPlaySND != ShouldPlay then
 			ent._oldShouldPlaySND = ShouldPlay
 			if ShouldPlay then
 				ent.weaponSND:Play()

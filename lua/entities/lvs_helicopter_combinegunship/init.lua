@@ -37,7 +37,7 @@ function ENT:SetRotor( PhysRot )
 
 	if not IsValid( Body ) then return end
 
-	if self._oldPhysRot ~= PhysRot then
+	if self._oldPhysRot != PhysRot then
 		self._oldPhysTor = PhysRot
 
 		if PhysRot then
@@ -68,7 +68,7 @@ function ENT:BodySounds()
 
 	local HP = self:GetHP()
 
-	if self._oldHPsnd ~= HP then
+	if self._oldHPsnd != HP then
 		if isnumber( self._oldHPsnd ) then
 			if self._oldHPsnd > HP and math.abs(self._oldHPsnd - HP) > 100 then
 				self:EmitSound("NPC_CombineGunship.Pain")
@@ -80,7 +80,7 @@ function ENT:BodySounds()
 
 	local trace = self:GetEyeTrace()
 
-	local SeeEnemy = IsValid( trace.Entity ) and trace.Entity ~= self._oldEnemySND and trace.Entity.LVS and self:IsEnemy( trace.Entity )
+	local SeeEnemy = IsValid( trace.Entity ) and trace.Entity != self._oldEnemySND and trace.Entity.LVS and self:IsEnemy( trace.Entity )
 
 	if SeeEnemy then
 		self._oldEnemySND = trace.Entity

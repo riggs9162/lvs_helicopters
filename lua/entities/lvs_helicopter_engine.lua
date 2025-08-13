@@ -13,7 +13,7 @@ function ENT:SetupDataTables()
 end
 
 if SERVER then
-	function ENT:Initialize()	
+	function ENT:Initialize()
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetSolid( SOLID_NONE )
 		self:DrawShadow( false )
@@ -21,7 +21,7 @@ if SERVER then
 	end
 
 	function ENT:CheckWater( Base )
-		if bit.band( util.PointContents( self:GetPos() ), CONTENTS_WATER ) ~= CONTENTS_WATER then
+		if bit.band( util.PointContents( self:GetPos() ), CONTENTS_WATER ) != CONTENTS_WATER then
 			if self.CountWater then
 				self.CountWater = nil
 			end
@@ -54,7 +54,7 @@ if SERVER then
 	function ENT:OnTakeDamage( dmginfo )
 	end
 
-	function ENT:UpdateTransmitState() 
+	function ENT:UpdateTransmitState()
 		return TRANSMIT_ALWAYS
 	end
 
@@ -97,7 +97,7 @@ function ENT:HandleEngineSounds( vehicle )
 	if IsValid( pod ) then
 		local ThirdPerson = pod:GetThirdPersonMode()
 
-		if ThirdPerson ~= self._lvsoldTP then
+		if ThirdPerson != self._lvsoldTP then
 			self._lvsoldTP = ThirdPerson
 			VolumeSetNow = DrivingMe
 		end
@@ -105,7 +105,7 @@ function ENT:HandleEngineSounds( vehicle )
 		FirstPerson = DrivingMe and not ThirdPerson
 	end
 
-	if DrivingMe ~= self._lvsoldDrivingMe then
+	if DrivingMe != self._lvsoldDrivingMe then
 		self._lvsoldDrivingMe = DrivingMe
 
 		self:StopSounds()
@@ -172,9 +172,9 @@ function ENT:OnEngineActiveChanged( Active )
 		self.EngineSounds[ id ].VolumeMin = data.VolumeMin or 0
 		self.EngineSounds[ id ].VolumeMax = data.VolumeMax or 1
 		self.EngineSounds[ id ].SoundLevel = data.SoundLevel or 100
-		self.EngineSounds[ id ].UseDoppler = data.UseDoppler ~= false
+		self.EngineSounds[ id ].UseDoppler = data.UseDoppler != false
 
-		if data.sound_int and data.sound_int ~= data.sound and DrivingMe then
+		if data.sound_int and data.sound_int != data.sound and DrivingMe then
 			local sound = CreateSound( self, data.sound )
 			sound:SetSoundLevel( data.SoundLevel )
 			sound:PlayEx(0,100)
@@ -219,7 +219,7 @@ function ENT:Think()
 
 	local EngineActive = vehicle:GetEngineActive()
 
-	if self._oldEnActive ~= EngineActive then
+	if self._oldEnActive != EngineActive then
 		self._oldEnActive = EngineActive
 		self:OnEngineActiveChanged( EngineActive )
 	end
@@ -242,7 +242,7 @@ end
 function ENT:DamageFX( vehicle )
 	local T = CurTime()
 	local HP = vehicle:GetHP()
-	local MaxHP = vehicle:GetMaxHP() 
+	local MaxHP = vehicle:GetMaxHP()
 
 	if HP <= 0 or HP > MaxHP * 0.5 or (self.nextDFX or 0) > T then return end
 

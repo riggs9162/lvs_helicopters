@@ -32,7 +32,7 @@ function ENT:FlyByThink()
 
 	local Approaching = ApproachAngle < 80
 
-	if Approaching ~= EntTable.OldApproaching then
+	if Approaching != EntTable.OldApproaching then
 		EntTable.OldApproaching = Approaching
 
 		if Approaching then

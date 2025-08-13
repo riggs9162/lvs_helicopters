@@ -2,7 +2,7 @@
 function ENT:CalcThrottle()
 	if not self:GetEngineActive() then
 
-		if self:GetThrottle() ~= 0 then self:SetThrottle( 0 ) end
+		if self:GetThrottle() != 0 then self:SetThrottle( 0 ) end
 
 		return
 	end
@@ -25,7 +25,7 @@ function ENT:HandleStart()
 	if IsValid( Driver ) then
 		local KeyReload = Driver:lvsKeyDown( "ENGINE" )
 
-		if self.OldKeyReload ~= KeyReload then
+		if self.OldKeyReload != KeyReload then
 			self.OldKeyReload = KeyReload
 
 			if KeyReload then

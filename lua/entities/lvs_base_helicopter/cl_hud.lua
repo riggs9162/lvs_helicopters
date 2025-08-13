@@ -5,7 +5,7 @@ function ENT:LVSHudPaintInfoText( X, Y, W, H, ScrX, ScrY, ply )
 	draw.DrawText( "km/h ", "LVS_FONT", X + 72, Y + 35, color_white, TEXT_ALIGN_RIGHT )
 	draw.DrawText( kmh, "LVS_FONT_HUD_LARGE", X + 72, Y + 20, color_white, TEXT_ALIGN_LEFT )
 
-	if ply ~= self:GetDriver() then return end
+	if ply != self:GetDriver() then return end
 
 	local hX = X + W - H * 0.5
 	local hY = Y + H * 0.25 + H * 0.25
@@ -44,34 +44,34 @@ function ENT:PaintHeliFlightInfo( X, Y, ply, Pos2D )
 	local Y = math.sin( math.rad( Roll ) )
 
 	surface.SetDrawColor( self.HudColor.r, self.HudColor.g, self.HudColor.b, 255 )
-	surface.DrawLine( Pos2D.x + X * 50, Pos2D.y + Y * 50, Pos2D.x + X * 125, Pos2D.y + Y * 125 ) 
-	surface.DrawLine( Pos2D.x - X * 50, Pos2D.y - Y * 50, Pos2D.x - X * 125, Pos2D.y - Y * 125 ) 
+	surface.DrawLine( Pos2D.x + X * 50, Pos2D.y + Y * 50, Pos2D.x + X * 125, Pos2D.y + Y * 125 )
+	surface.DrawLine( Pos2D.x - X * 50, Pos2D.y - Y * 50, Pos2D.x - X * 125, Pos2D.y - Y * 125 )
 
-	surface.DrawLine( Pos2D.x + 125, Pos2D.y, Pos2D.x + 130, Pos2D.y + 5 ) 
-	surface.DrawLine( Pos2D.x + 125, Pos2D.y, Pos2D.x + 130, Pos2D.y - 5 ) 
-	surface.DrawLine( Pos2D.x - 125, Pos2D.y, Pos2D.x - 130, Pos2D.y + 5 ) 
-	surface.DrawLine( Pos2D.x - 125, Pos2D.y, Pos2D.x - 130, Pos2D.y - 5 ) 
-	
+	surface.DrawLine( Pos2D.x + 125, Pos2D.y, Pos2D.x + 130, Pos2D.y + 5 )
+	surface.DrawLine( Pos2D.x + 125, Pos2D.y, Pos2D.x + 130, Pos2D.y - 5 )
+	surface.DrawLine( Pos2D.x - 125, Pos2D.y, Pos2D.x - 130, Pos2D.y + 5 )
+	surface.DrawLine( Pos2D.x - 125, Pos2D.y, Pos2D.x - 130, Pos2D.y - 5 )
+
 	surface.SetDrawColor( 0, 0, 0, 80 )
-	surface.DrawLine( Pos2D.x + X * 50 + 1, Pos2D.y + Y * 50 + 1, Pos2D.x + X * 125 + 1, Pos2D.y + Y * 125 + 1 ) 
-	surface.DrawLine( Pos2D.x - X * 50 + 1, Pos2D.y - Y * 50 + 1, Pos2D.x - X * 125 + 1, Pos2D.y - Y * 125 + 1 ) 
-	
-	surface.DrawLine( Pos2D.x + 126, Pos2D.y + 1, Pos2D.x + 131, Pos2D.y + 6 ) 
-	surface.DrawLine( Pos2D.x + 126, Pos2D.y + 1, Pos2D.x + 131, Pos2D.y - 4 ) 
-	surface.DrawLine( Pos2D.x - 126, Pos2D.y + 1, Pos2D.x - 129, Pos2D.y + 6 ) 
+	surface.DrawLine( Pos2D.x + X * 50 + 1, Pos2D.y + Y * 50 + 1, Pos2D.x + X * 125 + 1, Pos2D.y + Y * 125 + 1 )
+	surface.DrawLine( Pos2D.x - X * 50 + 1, Pos2D.y - Y * 50 + 1, Pos2D.x - X * 125 + 1, Pos2D.y - Y * 125 + 1 )
+
+	surface.DrawLine( Pos2D.x + 126, Pos2D.y + 1, Pos2D.x + 131, Pos2D.y + 6 )
+	surface.DrawLine( Pos2D.x + 126, Pos2D.y + 1, Pos2D.x + 131, Pos2D.y - 4 )
+	surface.DrawLine( Pos2D.x - 126, Pos2D.y + 1, Pos2D.x - 129, Pos2D.y + 6 )
 	surface.DrawLine( Pos2D.x - 126, Pos2D.y + 1, Pos2D.x - 129, Pos2D.y - 4 )
 
 	local X = math.cos( math.rad( Roll + 45 ) )
 	local Y = math.sin( math.rad( Roll + 45 ) )
-	surface.DrawLine( Pos2D.x + X * 30 - 1, Pos2D.y + Y * 30 + 1, Pos2D.x + X * 60 - 1, Pos2D.y + Y * 60 + 1 ) 
+	surface.DrawLine( Pos2D.x + X * 30 - 1, Pos2D.y + Y * 30 + 1, Pos2D.x + X * 60 - 1, Pos2D.y + Y * 60 + 1 )
 	local X = math.cos( math.rad( Roll + 135 ) )
 	local Y = math.sin( math.rad( Roll + 135 ) )
-	surface.DrawLine( Pos2D.x + X * 30 + 1, Pos2D.y + Y * 30 + 1, Pos2D.x + X * 60 + 1, Pos2D.y + Y * 60 + 1 ) 
+	surface.DrawLine( Pos2D.x + X * 30 + 1, Pos2D.y + Y * 30 + 1, Pos2D.x + X * 60 + 1, Pos2D.y + Y * 60 + 1 )
 
 	surface.SetDrawColor( self.HudColor.r, self.HudColor.g, self.HudColor.b, 255 )
 	local X = math.cos( math.rad( Roll + 45 ) )
 	local Y = math.sin( math.rad( Roll + 45 ) )
-	surface.DrawLine( Pos2D.x + X * 30, Pos2D.y + Y * 30, Pos2D.x + X * 60, Pos2D.y + Y * 60 ) 
+	surface.DrawLine( Pos2D.x + X * 30, Pos2D.y + Y * 30, Pos2D.x + X * 60, Pos2D.y + Y * 60 )
 	local X = math.cos( math.rad( Roll + 135 ) )
 	local Y = math.sin( math.rad( Roll + 135 ) )
 	surface.DrawLine( Pos2D.x + X * 30, Pos2D.y + Y * 30, Pos2D.x + X * 60, Pos2D.y + Y * 60 )
@@ -90,7 +90,7 @@ function ENT:PaintHeliFlightInfo( X, Y, ply, Pos2D )
 	for i = -180, 180 do
 		local Y = -i * 10 + Pitch * 10
 
-		local absN = math.abs( i ) 
+		local absN = math.abs( i )
 
 		local IsTen = absN == math.Round( absN / 10, 0 ) * 10
 
@@ -101,11 +101,11 @@ function ENT:PaintHeliFlightInfo( X, Y, ply, Pos2D )
 		if Alpha <= 0 then continue end
 
 		surface.SetDrawColor( self.HudColor.r, self.HudColor.g, self.HudColor.b, Alpha * 0.75 )
-		surface.DrawLine(Pos2D.x - 200 - SizeX, Pos2D.y + Y, Pos2D.x - 200, Pos2D.y + Y ) 
-		surface.DrawLine(Pos2D.x + 200 + SizeX, Pos2D.y + Y, Pos2D.x + 200, Pos2D.y + Y ) 
+		surface.DrawLine(Pos2D.x - 200 - SizeX, Pos2D.y + Y, Pos2D.x - 200, Pos2D.y + Y )
+		surface.DrawLine(Pos2D.x + 200 + SizeX, Pos2D.y + Y, Pos2D.x + 200, Pos2D.y + Y )
 		surface.SetDrawColor( 0, 0, 0, Alpha * 0.25 )
-		surface.DrawLine(Pos2D.x - 200 - SizeX, Pos2D.y + Y + 1, Pos2D.x - 200, Pos2D.y + Y + 1 ) 
-		surface.DrawLine(Pos2D.x + 200 + SizeX, Pos2D.y + Y + 1, Pos2D.x + 200, Pos2D.y + Y + 1) 
+		surface.DrawLine(Pos2D.x - 200 - SizeX, Pos2D.y + Y + 1, Pos2D.x - 200, Pos2D.y + Y + 1 )
+		surface.DrawLine(Pos2D.x + 200 + SizeX, Pos2D.y + Y + 1, Pos2D.x + 200, Pos2D.y + Y + 1)
 
 		if not IsTen then continue end
 
@@ -117,7 +117,7 @@ end
 function ENT:LVSHudPaint( X, Y, ply )
 	if not self:LVSPreHudPaint( X, Y, ply ) then return end
 
-	if ply ~= self:GetDriver() then return end
+	if ply != self:GetDriver() then return end
 
 	local HitPlane = self:GetEyeTrace( true ).HitPos:ToScreen()
 	local HitPilot = self:GetEyeTrace().HitPos:ToScreen()

@@ -165,7 +165,7 @@ function ENT:ApproachTargetAngle( TargetAngle, OverridePitch, OverrideYaw, Overr
 	local rollFactor = Lerp(rollInterp, self.PrevRoll, targetRollFactor)
 	local Roll = rollFactor
 
-	if OverrideRoll ~= 0 then
+	if OverrideRoll != 0 then
 		-- More responsive roll override with smooth transition
 		local targetRoll = math.Clamp(self:WorldToLocalAngles(Angle(Ang.p, Ang.y, OverrideRoll * 60)).r / 40, -1, 1)
 		Roll = Lerp(adaptiveInterp * 1.5, self.PrevRoll, targetRoll)  -- Faster transition for overrides
@@ -178,11 +178,11 @@ function ENT:ApproachTargetAngle( TargetAngle, OverridePitch, OverrideYaw, Overr
 
 	self.Roll = Roll
 
-	if OverridePitch and OverridePitch ~= 0 then
+	if OverridePitch and OverridePitch != 0 then
 		Pitch = OverridePitch
 	end
 
-	if OverrideYaw and OverrideYaw ~= 0 then
+	if OverrideYaw and OverrideYaw != 0 then
 		Yaw = OverrideYaw
 	end
 

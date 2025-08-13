@@ -116,7 +116,7 @@ function ENT:HandleShoot( FireInput, active )
 
 	if not IsValid( self.weaponSND ) then return end
 
-	if self._oldFire ~= Fire then
+	if self._oldFire != Fire then
 		self._oldFire = Fire
 
 		if Fire then

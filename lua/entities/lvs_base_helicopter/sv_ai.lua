@@ -11,7 +11,7 @@ function ENT:RunAI()
 	local RangerLength = 15000
 
 	local mySpeed = self:GetVelocity():Length()
-	local myRadius = self:BoundingRadius() 
+	local myRadius = self:BoundingRadius()
 	local myPos = self:GetPos()
 	local myDir = self:GetForward()
 
@@ -41,11 +41,11 @@ function ENT:RunAI()
 	for _, v in pairs( LVS:GetVehicles() ) do
 		if v == self then continue end
 
-		local theirRadius = v:BoundingRadius() 
+		local theirRadius = v:BoundingRadius()
 		local Sub = (myPos - v:GetPos())
 		local Dir = Sub:GetNormalized()
 		local Dist = Sub:Length()
-		
+
 		if Dist < (theirRadius + myRadius + 200) then
 			if math.deg( math.acos( math.Clamp( myDir:Dot( -Dir ) ,-1,1) ) ) < 90 then
 				cAvoid = cAvoid + Dir * (theirRadius + myRadius + 500)
@@ -88,7 +88,7 @@ function ENT:RunAI()
 			TargetPos = self:GetHardLockTarget():GetPos() + cAvoid * 8
 		else
 			if IsValid( Target ) then
-				local HisRadius = Target:BoundingRadius() 
+				local HisRadius = Target:BoundingRadius()
 				local HisPos = Target:GetPos() + Vector(0,0,600)
 
 				TargetPos = HisPos + (myPos - HisPos):GetNormalized() * (myRadius + HisRadius + 500) + cAvoid * 8
@@ -104,7 +104,7 @@ function ENT:RunAI()
 		if self:AITargetInFront( Target, 65 ) then
 			local tr = self:GetEyeTrace()
 
-			if (IsValid( tr.Entity ) and tr.Entity.LVS and tr.Entity.GetAITEAM) and (tr.Entity:GetAITEAM() ~= self:GetAITEAM() or tr.Entity:GetAITEAM() == 0) or true then
+			if (IsValid( tr.Entity ) and tr.Entity.LVS and tr.Entity.GetAITEAM) and (tr.Entity:GetAITEAM() != self:GetAITEAM() or tr.Entity:GetAITEAM() == 0) or true then
 				local CurHeat = self:GetNWHeat()
 				local CurWeapon = self:GetSelectedWeapon()
 

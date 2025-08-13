@@ -101,11 +101,11 @@ function ENT:CheckRotorClearance()
 
 		if Hit then
 			self.RotorHit = true
-			
+
 			self.RotorHitCount = self.RotorHitCount + 1
-		else 
+		else
 			self.RotorHit = false
-			
+
 			self.RotorHitCount = math.max(self.RotorHitCount - 1 * FT,0)
 		end
 
@@ -115,12 +115,12 @@ function ENT:CheckRotorClearance()
 	else
 		if tr.Hit and not tr.HitSky then
 			self.RotorHit = true
-		else 
+		else
 			self.RotorHit = false
 		end
 	end
 
-	if self.RotorHit ~= self.oldRotorHit then
+	if self.RotorHit != self.oldRotorHit then
 		if not isbool( self.oldRotorHit ) then self.oldRotorHit = self.RotorHit return end
 
 		if self.RotorHit then
@@ -138,7 +138,7 @@ function ENT:GetVehicle()
 end
 
 if SERVER then
-	function ENT:Initialize()	
+	function ENT:Initialize()
 		self:SetMoveType( MOVETYPE_NONE )
 		self:SetSolid( SOLID_NONE )
 		self:DrawShadow( false )
@@ -194,7 +194,7 @@ if SERVER then
 		self:DeleteRotorWash()
 	end
 
-	function ENT:UpdateTransmitState() 
+	function ENT:UpdateTransmitState()
 		return TRANSMIT_ALWAYS
 	end
 
@@ -211,7 +211,7 @@ if SERVER then
 		RotorWash:Activate()
 		RotorWash:SetParent( self )
 		RotorWash.DoNotDuplicate = true
-	
+
 		self:DeleteOnRemove( RotorWash )
 
 		self.RotorWashEnt = RotorWash

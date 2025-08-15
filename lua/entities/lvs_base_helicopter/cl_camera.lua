@@ -99,10 +99,10 @@ function ENT:ApplyCameraShake(view, pod, isFirstPerson)
 end
 
 -- Nudge the camera angles toward vehicle orientation for a more connected feel
-function ENT:ApplyCameraAlign(view, pod, ply, isFirstPerson)
+function ENT:ApplyCameraAlign(view, pod, client, isFirstPerson)
 	if not cvar_align_enable:GetBool() then return end
 	if not view or not view.angles then return end
-	if IsValid(ply) and ply:lvsKeyDown("FREELOOK") then return end
+	if IsValid(client) and client:lvsKeyDown("FREELOOK") then return end
 
 	local fac = math.Clamp(cvar_align_factor:GetFloat(), 0, 1)
 	if fac <= 0 then return end
@@ -122,7 +122,7 @@ function ENT:ApplyCameraAlign(view, pod, ply, isFirstPerson)
 	view.angles = LerpAngle(fac, view.angles, self._camAlignAng)
 end
 
-function ENT:CalcViewDirectInput( ply, pos, angles, fov, pod )
+function ENT:CalcViewDirectInput( client, pos, angles, fov, pod )
 	local ViewPosL = pod:WorldToLocal( pos )
 
 	local view = {}
@@ -130,13 +130,13 @@ function ENT:CalcViewDirectInput( ply, pos, angles, fov, pod )
 	view.drawviewer = true
 	view.angles = self:GetAngles()
 
-	local FreeLook = ply:lvsKeyDown( "FREELOOK" )
-	local Zoom = ply:lvsKeyDown( "ZOOM" )
+	local FreeLook = client:lvsKeyDown( "FREELOOK" )
+	local Zoom = client:lvsKeyDown( "ZOOM" )
 
 	if not pod:GetThirdPersonMode() then
 
 		if FreeLook then
-			view.angles = pod:LocalToWorldAngles( ply:EyeAngles() )
+			view.angles = pod:LocalToWorldAngles( client:EyeAngles() )
 		end
 
 		local velL = self:WorldToLocal( self:GetPos() + self:GetVelocity() )
@@ -157,7 +157,7 @@ function ENT:CalcViewDirectInput( ply, pos, angles, fov, pod )
 		view.angles.p = view.angles.p - pod._lerpPosOffset.z * 0.1
 		view.angles.y = view.angles.y + pod._lerpPosOffset.y * 0.1
 		-- Align 1st-person direct input toward vehicle to reduce drift/jitter
-		self:ApplyCameraAlign(view, pod, ply, true)
+		self:ApplyCameraAlign(view, pod, client, true)
 		view.drawviewer = false
 
 		-- Fake shake (first-person)
@@ -215,7 +215,7 @@ function ENT:CalcViewDirectInput( ply, pos, angles, fov, pod )
 	-- defer third-person angle smoothing until after alignment and look-at bias
 
 	-- Align 3rd-person direct input toward vehicle orientation
-	self:ApplyCameraAlign(view, pod, ply, false)
+	self:ApplyCameraAlign(view, pod, client, false)
 
 	-- Slight look-at bias toward the helicopter (skip during freelook)
 	if pod:GetThirdPersonMode() then
@@ -244,19 +244,19 @@ function ENT:CalcViewDirectInput( ply, pos, angles, fov, pod )
 	return view
 end
 
-function ENT:CalcViewMouseAim( ply, pos, angles, fov, pod )
+function ENT:CalcViewMouseAim( client, pos, angles, fov, pod )
 	local cvarFocus = math.Clamp( LVS.cvarCamFocus:GetFloat() , -1, 1 )
 
-	self._lvsSmoothFreeLook = self._lvsSmoothFreeLook + ((ply:lvsKeyDown( "FREELOOK" ) and 0 or 1) - self._lvsSmoothFreeLook) * RealFrameTime() * 10
+	self._lvsSmoothFreeLook = self._lvsSmoothFreeLook + ((client:lvsKeyDown( "FREELOOK" ) and 0 or 1) - self._lvsSmoothFreeLook) * RealFrameTime() * 10
 
 	local view = {}
 	view.origin = pos
 	view.fov = 90
 	view.drawviewer = true
-	view.angles = (self:GetForward() * (1 + cvarFocus) * self._lvsSmoothFreeLook * 0.8 + ply:EyeAngles():Forward() * math.max(1 - cvarFocus, 1 - self._lvsSmoothFreeLook)):Angle()
+	view.angles = (self:GetForward() * (1 + cvarFocus) * self._lvsSmoothFreeLook * 0.8 + client:EyeAngles():Forward() * math.max(1 - cvarFocus, 1 - self._lvsSmoothFreeLook)):Angle()
 
 	if cvarFocus >= 1 then
-		view.angles = LerpAngle( self._lvsSmoothFreeLook, ply:EyeAngles(), self:GetAngles() )
+		view.angles = LerpAngle( self._lvsSmoothFreeLook, client:EyeAngles(), self:GetAngles() )
 	else
 		-- Respect roll lock preference
 		if view.angles and not cvar_align_roll:GetBool() then
@@ -266,7 +266,7 @@ function ENT:CalcViewMouseAim( ply, pos, angles, fov, pod )
 
 	if not pod:GetThirdPersonMode() then
 		-- Align 1st-person view toward vehicle attitude
-		self:ApplyCameraAlign(view, pod, ply, true)
+		self:ApplyCameraAlign(view, pod, client, true)
 		view.drawviewer = false
 		-- Fake shake (first-person)
 		self:ApplyCameraShake(view, pod, true)
@@ -321,10 +321,10 @@ function ENT:CalcViewMouseAim( ply, pos, angles, fov, pod )
 	-- angle smoothing and look-at will be applied after alignment below
 
 	-- Align 3rd-person view toward vehicle attitude
-	self:ApplyCameraAlign(view, pod, ply, false)
+	self:ApplyCameraAlign(view, pod, client, false)
 
 	-- Slight look-at bias toward the helicopter (skip during freelook)
-	local FreeLook = ply:lvsKeyDown( "FREELOOK" )
+	local FreeLook = client:lvsKeyDown( "FREELOOK" )
 	if cvar_tpcam_look_enable:GetBool() and not FreeLook then
 		local upOff = cvar_tpcam_look_up:GetFloat()
 		local fwdOff = cvar_tpcam_look_fwd:GetFloat()
@@ -348,32 +348,32 @@ function ENT:CalcViewMouseAim( ply, pos, angles, fov, pod )
 	return view
 end
 
-function ENT:CalcViewOverride( ply, pos, angles, fov, pod )
+function ENT:CalcViewOverride( client, pos, angles, fov, pod )
 	return pos, angles, fov
 end
 
-function ENT:CalcViewDriver( ply, pos, angles, fov, pod )
+function ENT:CalcViewDriver( client, pos, angles, fov, pod )
 	if pod:GetThirdPersonMode() then
 		pos = self:WorldSpaceCenter()
 	end
 
-	if ply:lvsMouseAim() then
-		return self:CalcViewMouseAim( ply, pos, angles, fov, pod )
+	if client:lvsMouseAim() then
+		return self:CalcViewMouseAim( client, pos, angles, fov, pod )
 	else
-		return self:CalcViewDirectInput( ply, pos, angles, fov, pod )
+		return self:CalcViewDirectInput( client, pos, angles, fov, pod )
 	end
 end
 
-function ENT:CalcViewPassenger( ply, pos, angles, fov, pod )
-	return LVS:CalcView( self, ply, pos, angles, fov, pod )
+function ENT:CalcViewPassenger( client, pos, angles, fov, pod )
+	return LVS:CalcView( self, client, pos, angles, fov, pod )
 end
 
-function ENT:LVSCalcView( ply, original_pos, original_angles, original_fov, pod )
-	local pos, angles, fov = self:CalcViewOverride( ply, original_pos, original_angles, original_fov, pod )
+function ENT:LVSCalcView( client, original_pos, original_angles, original_fov, pod )
+	local pos, angles, fov = self:CalcViewOverride( client, original_pos, original_angles, original_fov, pod )
 
 	if self:GetDriverSeat() == pod then
-		return self:CalcViewDriver( ply, pos, angles, fov, pod )
+		return self:CalcViewDriver( client, pos, angles, fov, pod )
 	else
-		return self:CalcViewPassenger( ply, pos, angles, fov, pod )
+		return self:CalcViewPassenger( client, pos, angles, fov, pod )
 	end
 end

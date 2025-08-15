@@ -259,9 +259,9 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	if self:GetAI() then
 		self:CalcAIMove( phys, deltatime )
 	else
-		local ply = self:GetDriver()
-		if IsValid( ply ) and ply:lvsMouseAim() then
-			self:PlayerMouseAim( ply, phys, deltatime )
+		local client = self:GetDriver()
+		if IsValid( client ) and client:lvsMouseAim() then
+			self:PlayerMouseAim( client, phys, deltatime )
 		end
 	end
 

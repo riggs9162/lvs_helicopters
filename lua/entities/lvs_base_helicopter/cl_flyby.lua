@@ -2,15 +2,15 @@
 ENT.FlyByAdvance = 0
 
 function ENT:FlyByThink()
-	local ply = LocalPlayer()
+	local client = LocalPlayer()
 
-	if not IsValid( ply ) then return end
+	if not IsValid( client ) then return end
 
 	local EntTable = self:GetTable()
 
-	if ply:lvsGetVehicle() == self then EntTable.OldApproaching = false return end
+	if client:lvsGetVehicle() == self then EntTable.OldApproaching = false return end
 
-	local ViewEnt = ply:GetViewEntity()
+	local ViewEnt = client:GetViewEntity()
 
 	if not IsValid( ViewEnt ) then return end
 

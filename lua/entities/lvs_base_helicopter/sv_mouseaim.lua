@@ -1,21 +1,21 @@
 
-function ENT:PlayerMouseAim( ply, phys, deltatime )
+function ENT:PlayerMouseAim( client, phys, deltatime )
 	local Pod = self:GetDriverSeat()
 
-	local PitchUp = ply:lvsKeyDown( "+PITCH_HELI" )
-	local PitchDown = ply:lvsKeyDown( "-PITCH_HELI" )
-	local YawRight = ply:lvsKeyDown( "+YAW_HELI" )
-	local YawLeft = ply:lvsKeyDown( "-YAW_HELI" )
-	local RollRight = ply:lvsKeyDown( "+ROLL_HELI" )
-	local RollLeft = ply:lvsKeyDown( "-ROLL_HELI" )
+	local PitchUp = client:lvsKeyDown( "+PITCH_HELI" )
+	local PitchDown = client:lvsKeyDown( "-PITCH_HELI" )
+	local YawRight = client:lvsKeyDown( "+YAW_HELI" )
+	local YawLeft = client:lvsKeyDown( "-YAW_HELI" )
+	local RollRight = client:lvsKeyDown( "+ROLL_HELI" )
+	local RollLeft = client:lvsKeyDown( "-ROLL_HELI" )
 
-	local FreeLook = ply:lvsKeyDown( "FREELOOK" )
+	local FreeLook = client:lvsKeyDown( "FREELOOK" )
 
 	-- Initialize turn rate limiter if not exists
 	self.YawTurnRate = self.YawTurnRate or 0
 	self.MaxYawRate = 0.04 -- Maximum allowed turn rate per frame
 
-	local EyeAngles = Pod:WorldToLocalAngles( ply:EyeAngles() )
+	local EyeAngles = Pod:WorldToLocalAngles( client:EyeAngles() )
 
 	if FreeLook then
 		if isangle( self.StoredEyeAngles ) then
@@ -57,8 +57,8 @@ function ENT:PlayerMouseAim( ply, phys, deltatime )
 		self:ApproachTargetAngle( EyeAngles, OverridePitch, OverrideYaw, OverrideRoll, FreeLook, phys, deltatime )
 	end
 
-	if ply:lvsKeyDown( "HELI_HOVER" ) then
-		self:CalcHover( RollLeft, RollRight, PitchUp, PitchDown, ply:lvsKeyDown( "+THRUST_HELI" ), ply:lvsKeyDown( "-THRUST_HELI" ), phys, deltatime )
+	if client:lvsKeyDown( "HELI_HOVER" ) then
+		self:CalcHover( RollLeft, RollRight, PitchUp, PitchDown, client:lvsKeyDown( "+THRUST_HELI" ), client:lvsKeyDown( "-THRUST_HELI" ), phys, deltatime )
 
 		self.ResetSteer = true
 	else
@@ -68,6 +68,6 @@ function ENT:PlayerMouseAim( ply, phys, deltatime )
 			self:SetSteer( Vector(0,0,0) )
 		end
 
-		self:CalcThrust( ply:lvsKeyDown( "+THRUST_HELI" ), ply:lvsKeyDown( "-THRUST_HELI" ), deltatime )
+		self:CalcThrust( client:lvsKeyDown( "+THRUST_HELI" ), client:lvsKeyDown( "-THRUST_HELI" ), deltatime )
 	end
 end

@@ -1,11 +1,11 @@
 ENT.IconEngine = Material( "lvs/engine.png" )
 
-function ENT:LVSHudPaintInfoText( X, Y, W, H, ScrX, ScrY, ply )
+function ENT:LVSHudPaintInfoText( X, Y, W, H, ScrX, ScrY, client )
 	local kmh = math.Round(self:GetVelocity():Length() * 0.09144,0)
 	draw.DrawText( "km/h ", "LVS_FONT", X + 72, Y + 35, color_white, TEXT_ALIGN_RIGHT )
 	draw.DrawText( kmh, "LVS_FONT_HUD_LARGE", X + 72, Y + 20, color_white, TEXT_ALIGN_LEFT )
 
-	if ply != self:GetDriver() then return end
+	if client != self:GetDriver() then return end
 
 	local hX = X + W - H * 0.5
 	local hY = Y + H * 0.25 + H * 0.25
@@ -23,7 +23,7 @@ function ENT:LVSHudPaintInfoText( X, Y, W, H, ScrX, ScrY, ply )
 	self:LVSDrawCircle( hX, hY, H * 0.35, self:GetThrustPercent() )
 end
 
-function ENT:LVSPreHudPaint( X, Y, ply )
+function ENT:LVSPreHudPaint( X, Y, client )
 	return true
 end
 
@@ -32,7 +32,7 @@ ENT.HudThirdPerson = false
 ENT.HudGradient = Material("gui/center_gradient")
 ENT.HudColor = Color(255,255,255)
 
-function ENT:PaintHeliFlightInfo( X, Y, ply, Pos2D )
+function ENT:PaintHeliFlightInfo( X, Y, client, Pos2D )
 	local Roll = self:GetAngles().r
 
 	surface.SetDrawColor(0,0,0,40)
@@ -114,32 +114,32 @@ function ENT:PaintHeliFlightInfo( X, Y, ply, Pos2D )
 	end
 end
 
-function ENT:LVSHudPaint( X, Y, ply )
-	if not self:LVSPreHudPaint( X, Y, ply ) then return end
+function ENT:LVSHudPaint( X, Y, client )
+	if not self:LVSPreHudPaint( X, Y, client ) then return end
 
-	if ply != self:GetDriver() then return end
+	if client != self:GetDriver() then return end
 
 	local HitPlane = self:GetEyeTrace( true ).HitPos:ToScreen()
 	local HitPilot = self:GetEyeTrace().HitPos:ToScreen()
 
-	local pod = ply:GetVehicle()
+	local pod = client:GetVehicle()
 
 	if self.Hud then
 		if not pod:GetThirdPersonMode() then
-			self:PaintHeliFlightInfo( X, Y, ply, HitPilot )
+			self:PaintHeliFlightInfo( X, Y, client, HitPilot )
 		end
 	end
 
 	if self.HudThirdPerson then
 		if pod:GetThirdPersonMode() then
-			self:PaintHeliFlightInfo( X, Y, ply, HitPilot )
+			self:PaintHeliFlightInfo( X, Y, client, HitPilot )
 		end
 	end
 
 	self:PaintCrosshairCenter( HitPlane )
 	self:PaintCrosshairOuter( HitPilot )
 
-	if ply:lvsMouseAim() and not ply:lvsKeyDown( "FREELOOK" ) then
+	if client:lvsMouseAim() and not client:lvsKeyDown( "FREELOOK" ) then
 		self:LVSHudPaintMouseAim( HitPlane, HitPilot )
 	end
 

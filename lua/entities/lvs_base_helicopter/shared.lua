@@ -65,29 +65,29 @@ function ENT:SetupDataTables()
 	self:AddDT( "Float", "NWThrust" )
 end
 
-function ENT:PlayerDirectInput( ply, cmd )
+function ENT:PlayerDirectInput( client, cmd )
 	local Pod = self:GetDriverSeat()
 
 	local Delta = FrameTime()
 
-	local KeyLeft = ply:lvsKeyDown( "-ROLL_HELI" )
-	local KeyRight = ply:lvsKeyDown( "+ROLL_HELI" )
-	local KeyPitchUp = ply:lvsKeyDown( "+PITCH_HELI" )
-	local KeyPitchDown = ply:lvsKeyDown( "-PITCH_HELI" )
-	local KeyRollRight = ply:lvsKeyDown( "+YAW_HELI" )
-	local KeyRollLeft = ply:lvsKeyDown( "-YAW_HELI" )
+	local KeyLeft = client:lvsKeyDown( "-ROLL_HELI" )
+	local KeyRight = client:lvsKeyDown( "+ROLL_HELI" )
+	local KeyPitchUp = client:lvsKeyDown( "+PITCH_HELI" )
+	local KeyPitchDown = client:lvsKeyDown( "-PITCH_HELI" )
+	local KeyRollRight = client:lvsKeyDown( "+YAW_HELI" )
+	local KeyRollLeft = client:lvsKeyDown( "-YAW_HELI" )
 
 	local MouseX = cmd:GetMouseX()
 	local MouseY = cmd:GetMouseY()
 
-	if ply:lvsKeyDown( "FREELOOK" ) and not Pod:GetThirdPersonMode() then
+	if client:lvsKeyDown( "FREELOOK" ) and not Pod:GetThirdPersonMode() then
 		MouseX = 0
 		MouseY = 0
 	else
-		ply:SetEyeAngles( Angle(0,90,0) )
+		client:SetEyeAngles( Angle(0,90,0) )
 	end
 
-	local SensX, SensY, ReturnDelta = ply:lvsMouseSensitivity()
+	local SensX, SensY, ReturnDelta = client:lvsMouseSensitivity()
 
 	if KeyPitchDown then MouseY = (10 / SensY) * ReturnDelta end
 	if KeyPitchUp then MouseY = -(10 / SensY) * ReturnDelta end
@@ -149,8 +149,8 @@ function ENT:PlayerDirectInput( ply, cmd )
 
 	if CLIENT then return end
 
-	if ply:lvsKeyDown( "HELI_HOVER" ) then
-		self:CalcHover( ply:lvsKeyDown( "-YAW_HELI" ), ply:lvsKeyDown( "+YAW_HELI" ), KeyPitchUp, KeyPitchDown, ply:lvsKeyDown( "+THRUST_HELI" ), ply:lvsKeyDown( "-THRUST_HELI" ) )
+	if client:lvsKeyDown( "HELI_HOVER" ) then
+		self:CalcHover( client:lvsKeyDown( "-YAW_HELI" ), client:lvsKeyDown( "+YAW_HELI" ), KeyPitchUp, KeyPitchDown, client:lvsKeyDown( "+THRUST_HELI" ), client:lvsKeyDown( "-THRUST_HELI" ) )
 
 		self.ResetSteer = true
 
@@ -161,15 +161,15 @@ function ENT:PlayerDirectInput( ply, cmd )
 			self:SetSteer( Vector(0,0,0) )
 		end
 
-		self:CalcThrust( ply:lvsKeyDown( "+THRUST_HELI" ), ply:lvsKeyDown( "-THRUST_HELI" ) )
+		self:CalcThrust( client:lvsKeyDown( "+THRUST_HELI" ), client:lvsKeyDown( "-THRUST_HELI" ) )
 	end
 end
 
-function ENT:StartCommand( ply, cmd )
-	if self:GetDriver() != ply then return end
+function ENT:StartCommand( client, cmd )
+	if self:GetDriver() != client then return end
 
 	if SERVER then
-		local KeyJump = ply:lvsKeyDown( "VSPEC" )
+		local KeyJump = client:lvsKeyDown( "VSPEC" )
 
 		if self._lvsOldKeyJump != KeyJump then
 			self._lvsOldKeyJump = KeyJump
@@ -180,8 +180,8 @@ function ENT:StartCommand( ply, cmd )
 		end
 	end
 
-	if not ply:lvsMouseAim() then
-		self:PlayerDirectInput( ply, cmd )
+	if not client:lvsMouseAim() then
+		self:PlayerDirectInput( client, cmd )
 	end
 end
 

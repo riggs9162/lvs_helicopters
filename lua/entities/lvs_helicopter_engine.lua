@@ -83,13 +83,13 @@ function ENT:StopSounds()
 end
 
 function ENT:HandleEngineSounds( vehicle )
-	local ply = LocalPlayer()
-	local pod = ply:GetVehicle()
+	local client = LocalPlayer()
+	local pod = client:GetVehicle()
 	local Throttle = vehicle:GetThrottle()
 	local Volume = (0.6 + math.max( vehicle:GetThrustStrenght(), 0 ) * 0.4) * Throttle
-	local Doppler = vehicle:CalcDoppler( ply )
+	local Doppler = vehicle:CalcDoppler( client )
 
-	local DrivingMe = ply:lvsGetVehicle() == vehicle
+	local DrivingMe = client:lvsGetVehicle() == vehicle
 
 	local VolumeSetNow = false
 
@@ -158,8 +158,8 @@ end
 function ENT:OnEngineActiveChanged( Active )
 	if not Active then self:StopSounds() return end
 
-	local ply = LocalPlayer()
-	local DrivingMe = ply:lvsGetVehicle() == self:GetBase()
+	local client = LocalPlayer()
+	local DrivingMe = client:lvsGetVehicle() == self:GetBase()
 
 	for id, data in pairs( self.EngineSounds ) do
 		if not isstring( data.sound ) then continue end

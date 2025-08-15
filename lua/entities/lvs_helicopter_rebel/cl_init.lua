@@ -1,7 +1,7 @@
 include("shared.lua")
 
-function ENT:CalcViewPassenger( ply, pos, angles, fov, pod )
-	if pod == self:GetGunnerSeat() then return LVS:CalcView( self, ply, pos, angles, fov, pod ) end
+function ENT:CalcViewPassenger( client, pos, angles, fov, pod )
+	if pod == self:GetGunnerSeat() then return LVS:CalcView( self, client, pos, angles, fov, pod ) end
 
 	local view = {}
 	view.origin = pos
@@ -9,7 +9,7 @@ function ENT:CalcViewPassenger( ply, pos, angles, fov, pod )
 	view.fov = fov
 	view.drawviewer = false
 
-	local Pod = ply:GetVehicle()
+	local Pod = client:GetVehicle()
 
 	if not IsValid( Pod ) then return view end
 

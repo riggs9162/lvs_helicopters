@@ -1,8 +1,7 @@
 -- Third-person camera dynamic distance/FOV based on yaw offset
 local cvar_tpcam_yaw_dist_enable = CreateClientConVar("lvs_heli_tpcam_yaw_dist_enable", "1", true, false)
 local cvar_tpcam_yaw_dist_max    = CreateClientConVar("lvs_heli_tpcam_yaw_dist_max", "220", true, false)
-local cvar_tpcam_yaw_fov_enable  = CreateClientConVar("lvs_heli_tpcam_yaw_fov_enable", "1", true, false)
-local cvar_tpcam_yaw_fov_max     = CreateClientConVar("lvs_heli_tpcam_yaw_fov_max", "18", true, false)
+-- (FOV-based adjustments removed; keep distance-only behavior)
 
 -- Camera shake cvars (client)
 local cvar_shake_enable  = CreateClientConVar("lvs_heli_shake_enable", "1", true, false)
@@ -171,14 +170,14 @@ function ENT:CalcViewDirectInput( client, pos, angles, fov, pod )
 	local radius = 550
 	radius = radius + radius * pod:GetCameraDistance()
 
-	-- Dynamic camera distance/FOV based on yaw offset
+	-- Dynamic camera distance based on yaw offset: bring the camera closer
+	-- when the view is angled left/right. We no longer modify FOV here.
 	local camYawOffset = math.abs(math.AngleDifference(view.angles.y, self:GetAngles().y))
-	local yawFrac = math.Clamp(camYawOffset / 90, 0, 1) -- 0 = forward, 1 = 90deg left/right
+	-- Use full 0..180 degree range so this works for the entire 360deg heading
+	local yawFrac = math.Clamp(camYawOffset / 180, 0, 1) -- 0 = forward, 1 = 180deg (behind)
 	if cvar_tpcam_yaw_dist_enable:GetBool() then
-		radius = radius + yawFrac * cvar_tpcam_yaw_dist_max:GetFloat()
-	end
-	if cvar_tpcam_yaw_fov_enable:GetBool() then
-		view.fov = 75 + (1 - yawFrac) * cvar_tpcam_yaw_fov_max:GetFloat()
+		-- Subtract distance when looking to the sides; clamp to a sensible minimum
+		radius = math.max(100, radius - yawFrac * cvar_tpcam_yaw_dist_max:GetFloat())
 	end
 
 	if FreeLook then
@@ -226,7 +225,12 @@ function ENT:CalcViewDirectInput( client, pos, angles, fov, pod )
 			local desiredAng = (target - view.origin):Angle()
 			desiredAng.r = view.angles.r -- preserve current roll
 			local lookFac = math.Clamp(cvar_tpcam_look_factor:GetFloat(), 0, 1)
-			view.angles = LerpAngle(lookFac, view.angles, desiredAng)
+			-- Increase look-at bias when we're not directly behind the vehicle.
+			-- yawFrac is 0 when aligned, 1 when directly behind. We want more
+			-- bias as we move from back (1) toward sides/front (0), so scale
+			-- by (1 - yawFrac).
+			local dynamicLook = lookFac * (1 - (yawFrac or 0))
+			view.angles = LerpAngle(dynamicLook, view.angles, desiredAng)
 		end
 
 		-- Optional angle smoothing for third-person angles
@@ -273,17 +277,16 @@ function ENT:CalcViewMouseAim( client, pos, angles, fov, pod )
 		return view
 	end
 
-	local radius = 550
+	local radius = 512
 	radius = radius + radius * pod:GetCameraDistance()
 
-	-- Dynamic camera distance/FOV based on yaw offset
+	-- Dynamic camera distance based on yaw offset: bring the camera closer
+	-- when the view is angled left/right. We no longer modify FOV here.
 	local camYawOffset = math.abs(math.AngleDifference(view.angles.y, self:GetAngles().y))
-	local yawFrac = math.Clamp(camYawOffset / 90, 0, 1)
+	-- Use full 0..180 degree range so this works for the entire 360deg heading
+	local yawFrac = math.Clamp(camYawOffset / 180, 0, 1)
 	if cvar_tpcam_yaw_dist_enable:GetBool() then
-		radius = radius + yawFrac * cvar_tpcam_yaw_dist_max:GetFloat()
-	end
-	if cvar_tpcam_yaw_fov_enable:GetBool() then
-		view.fov = 75 + (1 - yawFrac) * cvar_tpcam_yaw_fov_max:GetFloat()
+		radius = math.max(100, radius - yawFrac * cvar_tpcam_yaw_dist_max:GetFloat())
 	end
 
 	local TargetOrigin = view.origin - view.angles:Forward() * radius  + view.angles:Up() * (radius * 0.2 + radius * pod:GetCameraHeight())
@@ -332,7 +335,8 @@ function ENT:CalcViewMouseAim( client, pos, angles, fov, pod )
 		local desiredAng = (target - view.origin):Angle()
 		desiredAng.r = view.angles.r -- preserve current roll
 		local lookFac = math.Clamp(cvar_tpcam_look_factor:GetFloat(), 0, 1)
-		view.angles = LerpAngle(lookFac, view.angles, desiredAng)
+		local dynamicLook = lookFac * (1 - (yawFrac or 0))
+		view.angles = LerpAngle(dynamicLook, view.angles, desiredAng)
 	end
 
 	-- Optional angle smoothing for third-person angles

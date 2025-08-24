@@ -419,30 +419,29 @@ function ENT:CalcHover( InputLeft, InputRight, InputUp, InputDown, ThrustUp, Thr
 	local VelL = self._hoverVelL
 	local AngVel = PhysObj:GetAngleVelocity()
 
-	local KeyLeft = InputLeft and 60 or 0
-	local KeyRight = InputRight and 60 or 0
-	local KeyPitchUp = InputUp and 60 or 0
-	local KeyPitchDown = InputDown and 60 or 0
+	-- In hover mode we ignore direct pitch/roll input from the player and
+	-- instead auto-level the vehicle. The only user input we allow is yaw
+	-- (rotate left/right) which is passed in via InputLeft/InputRight.
+	local KeyYawLeft = InputLeft and 1 or 0
+	local KeyYawRight = InputRight and 1 or 0
 
-	local Pitch = KeyPitchDown - KeyPitchUp
-	local Roll = KeyRight - KeyLeft
+	local Pitch = 0
+	local Roll = 0
 
 	-- Initialize hover oscillation variables if they don't exist
 	self.HoverTimeX = (self.HoverTimeX or 0) + deltatime * 1.5
 	self.HoverTimeY = (self.HoverTimeY or 0) + deltatime * 1.7
 
-	-- Only apply auto-leveling corrections when no manual input is given
-	if (Pitch + Roll) == 0 then
-		-- More responsive auto-leveling with subtle oscillation for realism
+	-- Always auto-level pitch/roll while hovering (keep the helicopter in place)
+	do
 		local hoverOscX = math.sin(self.HoverTimeX) * 1.5
 		local hoverOscY = math.cos(self.HoverTimeY) * 1.3
 
-		-- Calculate auto-leveling with enhanced response
-	Pitch = math.Clamp(-VelL.x / 180, -1, 1) * 60 + hoverOscX
-	Roll = math.Clamp(VelL.y / 230, -1, 1) * 60 + hoverOscY
+		Pitch = math.Clamp(-VelL.x / 180, -1, 1) * 60 + hoverOscX
+		Roll = math.Clamp(VelL.y / 230, -1, 1) * 60 + hoverOscY
 
-	-- Apply turbulence if active
-	if self.EnableTurbulence and self.TurbulenceIntensity and self.TurbulenceIntensity > 0 then
+		-- Apply turbulence if active
+		if self.EnableTurbulence and self.TurbulenceIntensity and self.TurbulenceIntensity > 0 then
 			local turbFactor = self.TurbulenceIntensity * 15
 			Pitch = Pitch + (math.sin(CurTime() * 2.2) * turbFactor)
 			Roll = Roll + (math.cos(CurTime() * 1.8) * turbFactor)
@@ -469,11 +468,18 @@ function ENT:CalcHover( InputLeft, InputRight, InputUp, InputDown, ThrustUp, Thr
 	local newSteerX = curSteer.x + dx
 	local newSteerY = curSteer.y + dy
 
+	-- Handle yaw (rotation) from user input while hovering. We smoothly
+	-- apply yaw commands into steer.z so the vehicle can rotate in place.
+	local desiredYaw = math.Clamp( (KeyYawRight and 1 or 0) - (KeyYawLeft and 1 or 0), -1, 1 )
+	local dz = math.Clamp(desiredYaw - curSteer.z, -maxDelta * 2, maxDelta * 2)
+	local newSteerZ = curSteer.z + dz
+
 	-- Small lerp on top to remove residual jerk
 	newSteerX = Lerp(lerpRate, curSteer.x, newSteerX)
 	newSteerY = Lerp(lerpRate, curSteer.y, newSteerY)
+	newSteerZ = Lerp(lerpRate, curSteer.z, newSteerZ)
 
-	self:SetSteer( Vector(newSteerX, newSteerY, curSteer.z) )
+	self:SetSteer( Vector(newSteerX, newSteerY, newSteerZ) )
 
 	self.Roll = Ang.r
 
